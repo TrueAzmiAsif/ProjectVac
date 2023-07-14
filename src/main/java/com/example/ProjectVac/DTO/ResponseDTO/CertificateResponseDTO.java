@@ -8,7 +8,7 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @FieldDefaults(level= AccessLevel.PRIVATE)
 @Builder
-public class Certificate1ResponseDTO {
+public class CertificateResponseDTO {
     String name;
     String gender;
     int phone;

@@ -10,13 +10,13 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Builder
-public class CertificateDose1 {
+public class Certificate {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     int id;
     boolean doseTaken;
     String certificateID;
-    @OneToOne
+    @ManyToOne
     @JoinColumn
     Appointment app;
 }

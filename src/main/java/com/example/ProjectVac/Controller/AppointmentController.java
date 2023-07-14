@@ -14,13 +14,15 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.text.ParseException;
+
 @RestController
 @RequestMapping("/appointment")
 public class AppointmentController {
     @Autowired
     AppointmentServiceImpl apServ;
     @PostMapping("/add")
-    public ResponseEntity add(@RequestBody AppointmentRequestDTO apReq){
+    public ResponseEntity add(@RequestBody AppointmentRequestDTO apReq) throws ParseException {
         AppointmentResponseDTO apResp;
         try{
             apResp=apServ.add(apReq);

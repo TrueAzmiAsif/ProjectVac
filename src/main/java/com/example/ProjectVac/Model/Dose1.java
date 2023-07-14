@@ -1,14 +1,8 @@
 package com.example.ProjectVac.Model;
 
 import com.example.ProjectVac.Enum.Vaccine;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToOne;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import jakarta.persistence.*;
+import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.util.Date;
@@ -18,9 +12,12 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
+@Builder
 public class Dose1 {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     int id;
+    @Enumerated(value = EnumType.STRING)
     Vaccine Vac_name;
     Date date;
     String Vac_id;

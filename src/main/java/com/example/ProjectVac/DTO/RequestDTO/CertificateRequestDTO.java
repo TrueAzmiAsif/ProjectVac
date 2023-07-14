@@ -10,7 +10,7 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @NoArgsConstructor
 @FieldDefaults(level= AccessLevel.PRIVATE)
-public class Certificate1RequestDTO {
+public class CertificateRequestDTO {
     int appId;
     boolean doseTaken;
 }

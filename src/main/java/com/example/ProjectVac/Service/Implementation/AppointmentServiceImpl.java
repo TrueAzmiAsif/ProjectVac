@@ -6,58 +6,65 @@ import com.example.ProjectVac.Enum.DoseNo;
 import com.example.ProjectVac.Exception.CenterNotFoundException;
 import com.example.ProjectVac.Exception.DoctorNotFoundException;
 import com.example.ProjectVac.Exception.UserNotFoundException;
-import com.example.ProjectVac.Model.Appointment;
-import com.example.ProjectVac.Model.Doctor;
-import com.example.ProjectVac.Model.User;
-import com.example.ProjectVac.Model.VaccinationCenter;
-import com.example.ProjectVac.Repository.AppointmentRepository;
-import com.example.ProjectVac.Repository.DoctorRepository;
-import com.example.ProjectVac.Repository.UserRepository;
-import com.example.ProjectVac.Repository.VCenterRepository;
+import com.example.ProjectVac.Model.*;
+import com.example.ProjectVac.Repository.*;
 import com.example.ProjectVac.Service.AppointmentService;
 import com.example.ProjectVac.Transformer.DTOtoEntity.AppointmentDTOToEntity;
 import com.example.ProjectVac.Transformer.EntityToDTO.EntityToAppointmentDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.text.ParseException;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class AppointmentServiceImpl implements AppointmentService {
-    @Autowired
-    AppointmentRepository appRep;
-    @Autowired
-    DoctorRepository docReq;
+//    @Autowired
+//    AppointmentRepository appRep;
     @Autowired
     UserRepository usRep;
     @Autowired
-    VCenterRepository vcRep;
-    public AppointmentResponseDTO add(AppointmentRequestDTO appReq)throws DoctorNotFoundException,CenterNotFoundException,UserNotFoundException{
+    DoctorRepository docRep;
+    @Autowired
+    Dose1ServiceImpl dose1serv;
+    @Autowired
+    Dose2ServiceImpl dose2serv;
+    public AppointmentResponseDTO add(AppointmentRequestDTO appReq) throws DoctorNotFoundException, CenterNotFoundException, UserNotFoundException, ParseException {
         //Optional<Doctor> doc=docReq.findById(appReq.getDocId());
         DoseNo dose;
         Appointment app;
         Doctor doc;
-        Optional<VaccinationCenter> center=vcRep.findById(appReq.getCenter().getId());
-        Optional<User> user=usRep.findById(appReq.getUser().getId());
-        if(center.isEmpty())
-            throw new CenterNotFoundException("OOPS! Center not found");
-        else if(user.isEmpty())
+        User userToSave;
+//        VaccinationCenter center=vcRep.findByLocationAndName(appReq.getLocation(),appReq.getCenterName());
+        Optional<User> user=usRep.findById(appReq.getUserId());
+        Optional<Doctor> optDoc=docRep.findById(appReq.getDocId());
+//        if(center==null)
+//            throw new CenterNotFoundException("OOPS! Center not found");
+        if(user.isEmpty())
             throw new UserNotFoundException("OOPS! User not found");
-        else if(center.get().getDoc().isEmpty())
+        else if(optDoc.isEmpty())
             throw new DoctorNotFoundException("OOPS! Doctor not found");
         else{
-            List<Doctor> docList=center.get().getDoc();
-            doc=docList.get((int)Math.random() * docList.size());
-            if(user.get().isDose1Taken())
+            doc=optDoc.get();
+            userToSave=user.get();
+//            List<Doctor> docList=center.getDoc();
+//            doc=docList.get((int)Math.random() * docList.size());
+            if(userToSave.isDose1Taken())
                 dose=DoseNo.DOSE2;
             else dose=DoseNo.DOSE1;
-            app= AppointmentDTOToEntity.appointmentDTOToEntity(appReq,doc,dose);
+            app= AppointmentDTOToEntity.appointmentDTOToEntity(appReq,doc,dose,doc.getCenter(),userToSave);
         }
+//        System.out.println(app.getAp_date());
         doc.getApp().add(app);
-        docReq.save(doc);
-        User userToSave=user.get();
+        //userToSave=user.get();
         userToSave.getApp().add(app);
+        if(dose==DoseNo.DOSE1)
+            userToSave.setDose1(dose1serv.newDose(appReq.getVacName(),app.getAp_date(),userToSave));
+        else
+            userToSave.setDose2(dose2serv.newDose(appReq.getVacName(),app.getAp_date(),userToSave));
+//        center.getApp().add(app);
         usRep.save(userToSave);
         return EntityToAppointmentDTO.entityToAppointmentDTO(app);
     }

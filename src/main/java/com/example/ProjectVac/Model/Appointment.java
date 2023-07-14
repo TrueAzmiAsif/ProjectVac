@@ -8,6 +8,7 @@ import lombok.experimental.FieldDefaults;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.util.Date;
+import java.util.List;
 
 @Entity
 @Data
@@ -20,11 +21,13 @@ public class Appointment {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     int id;
     String doc_name;
-    String center_name;
-    String location;
+//    String center_name;
+//    String location;
     @CreationTimestamp
     Date date_of_book;
+    @Enumerated(value = EnumType.STRING)
     Vaccine vac_name;
+    @Enumerated(value = EnumType.STRING)
     DoseNo dose_num;
     Date ap_date;
     @ManyToOne
@@ -36,8 +39,6 @@ public class Appointment {
     @ManyToOne
     @JoinColumn
     VaccinationCenter center;
-    @OneToOne(mappedBy = "app",cascade = CascadeType.ALL)
-    CertificateDose1 cert1;
-    @OneToOne(mappedBy = "app",cascade = CascadeType.ALL)
-    CertificateDose1 cert2;
+    @OneToMany(mappedBy = "app",cascade = CascadeType.ALL)
+    List<Certificate> certificate;
 }

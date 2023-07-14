@@ -10,6 +10,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.util.Date;
 
@@ -18,10 +19,10 @@ import java.util.Date;
 @NoArgsConstructor
 @FieldDefaults(level= AccessLevel.PRIVATE)
 public class AppointmentRequestDTO {
-    String centerName;
-    String location;
-    Date dOAp;
+//    String centerName;
+//    String location;
+    String date;
     Vaccine vacName;
-    User user;
-    VaccinationCenter center;
+    int userId;
+    int docId;
 }
